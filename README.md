@@ -5,7 +5,19 @@ Example usage
 
 ```
 provider "scalechamp" {
-    token = "9d1c7a6689bf9aeb7d5086067c1ce236"
+    token = "<token>"
+}
+
+resource "scalechamp_postgresql" "main_db" {
+  name = "main_db"
+  plan = "hobby-100"
+  cloud = "do"
+  region = "fra1"
+  whitelist = ["<ip|subnet>"]
+}
+
+output "myredis" {
+  value = "${scalechamp_redis.redis_cache.master_host} ${scalechamp_redis.redis_cache.password}"
 }
 
 resource "scalechamp_redis" "redis_cache" {
@@ -13,7 +25,7 @@ resource "scalechamp_redis" "redis_cache" {
   plan = "hobby-100"
   cloud = "do"
   region = "fra1"
-  whitelist = ["85.238.98.91"]
+  whitelist = ["<ip|subnet>"]
 }
 
 output "myredis" {
