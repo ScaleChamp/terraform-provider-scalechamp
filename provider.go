@@ -5,7 +5,7 @@ import (
 	"github.com/scalechamp/goss"
 )
 
-func Provider() *schema.Provider {
+func ProviderFunc() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"token": {

@@ -30,6 +30,11 @@ func resourceInstance(kind string) *schema.Resource {
 			Optional:    true,
 			Description: "Name of the region you want to create your instanceResource i",
 		},
+		"eviction_policy": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Name of the region you want to create your instanceResource i",
+		},
 		"whitelist": {
 			Type:        schema.TypeSet,
 			Elem:        &schema.Schema{
@@ -98,11 +103,19 @@ func (r *instanceResource) resourceCreate(d *schema.ResourceData, meta interface
 	if err != nil {
 		return err
 	}
-	data, err := api.Instances.Create(&goss.InstanceCreateRequest{
+	createRequest := &goss.InstanceCreateRequest{
 		Name:           d.Get("name").(string),
 		Whitelist:      d.Get("whitelist").([]string),
+		Password:       d.Get("password").(string),
 		PlanID:         plan.ID,
-	})
+	}
+	if r.kind == "redis" || r.kind == "keydb" || r.kind == "keydb-pro" {
+		createRequest.EvictionPolicy = d.Get("eviction_policy").(string)
+	}
+	if r.kind == "keydb-pro" {
+		createRequest.LicenseKey = d.Get("license_key").(string)
+	}
+	data, err := api.Instances.Create(createRequest)
 	if err != nil {
 		return err
 	}
@@ -162,6 +175,19 @@ func (r *instanceResource) resourceUpdate(d *schema.ResourceData, meta interface
 	if d.HasChange("whitelist") {
 		whitelist := d.Get("whitelist").([]string)
 		instanceUpdateRequest.Whitelist = &whitelist
+	}
+
+	if r.kind == "keydb" || r.kind == "redis" || r.kind == "keydb-pro" {
+		if d.HasChange("eviction_policy") {
+			evictionPolicy := d.Get("eviction_policy").(string)
+			instanceUpdateRequest.EvictionPolicy = evictionPolicy
+		}
+		if r.kind == "keydb-pro" {
+			if d.HasChange("license_key") {
+				licenseKey := d.Get("license_key").(string)
+				instanceUpdateRequest.LicenseKey = licenseKey
+			}
+		}
 	}
 
 	_, err := api.Instances.Update(instanceUpdateRequest)
