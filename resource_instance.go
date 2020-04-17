@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/scalechamp/goss"
@@ -96,12 +97,13 @@ type instanceResource struct {
 
 func (r *instanceResource) resourceCreate(d *schema.ResourceData, meta interface{}) error {
 	api := meta.(*goss.Client)
-	plan, err := api.Plans.Find(&goss.PlanFindRequest{
+	planFindRequest := &goss.PlanFindRequest{
 		Cloud:  d.Get("cloud").(string),
 		Region: d.Get("region").(string),
 		Name:   d.Get("plan").(string),
 		Kind:   r.kind,
-	})
+	}
+	plan, err := api.Plans.Find(context.TODO(), planFindRequest)
 	if err != nil {
 		return err
 	}
@@ -117,7 +119,7 @@ func (r *instanceResource) resourceCreate(d *schema.ResourceData, meta interface
 	if r.kind == "keydb-pro" {
 		createRequest.LicenseKey = d.Get("license_key").(string)
 	}
-	data, err := api.Instances.Create(createRequest)
+	data, err := api.Instances.Create(context.TODO(), createRequest)
 	if err != nil {
 		return err
 	}
@@ -125,7 +127,7 @@ func (r *instanceResource) resourceCreate(d *schema.ResourceData, meta interface
 
 	for i := 0; i < 36; i += 1 {
 		time.Sleep(10 * time.Second)
-		data, err = api.Instances.Get(data.ID)
+		data, err = api.Instances.Get(context.TODO(), data.ID)
 		if err != nil {
 			return err
 		}
@@ -156,7 +158,7 @@ func (r *instanceResource) resourceUpdate(d *schema.ResourceData, meta interface
 			Name:   d.Get("plan").(string),
 			Kind:   r.kind,
 		}
-		plan, err := client.Plans.Find(planFindRequest)
+		plan, err := client.Plans.Find(context.TODO(), planFindRequest)
 		if err != nil {
 			return err
 		}
@@ -186,13 +188,13 @@ func (r *instanceResource) resourceUpdate(d *schema.ResourceData, meta interface
 		}
 	}
 
-	_, err := client.Instances.Update(instanceUpdateRequest)
+	_, err := client.Instances.Update(context.TODO(), instanceUpdateRequest)
 	if err != nil {
 		return err
 	}
 	for i := 0; i < 50; i += 1 {
 		time.Sleep(5 * time.Second)
-		instance, err := client.Instances.Get(d.Id())
+		instance, err := client.Instances.Get(context.TODO(), d.Id())
 		if err != nil {
 			return err
 		}
@@ -212,7 +214,7 @@ func boolPtr(b bool) *bool {
 
 func (r *instanceResource) resourceRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*goss.Client)
-	instance, err := client.Instances.Get(d.Id())
+	instance, err := client.Instances.Get(context.TODO(), d.Id())
 	if err != nil {
 		return err
 	}
@@ -225,5 +227,5 @@ func (r *instanceResource) resourceRead(d *schema.ResourceData, meta interface{}
 
 func (r *instanceResource) resourceDelete(d *schema.ResourceData, meta interface{}) error {
 	api := meta.(*goss.Client)
-	return api.Instances.Delete(d.Id())
+	return api.Instances.Delete(context.TODO(), d.Id())
 }

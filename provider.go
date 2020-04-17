@@ -2,10 +2,11 @@ package main
 
 import (
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/terraform"
 	"github.com/scalechamp/goss"
 )
 
-func ProviderFunc() *schema.Provider {
+func ProviderFunc() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"token": {
