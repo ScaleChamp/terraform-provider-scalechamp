@@ -16,16 +16,16 @@ resource "scalechamp_postgresql" "main_db" {
   whitelist = ["<ip|subnet>"]
 }
 
-output "myredis" {
-  value = "${scalechamp_redis.redis_cache.master_host} ${scalechamp_redis.redis_cache.password}"
-}
-
 resource "scalechamp_redis" "redis_cache" {
   name = "cache"
   plan = "hobby-100"
   cloud = "do"
   region = "fra1"
   whitelist = ["<ip|subnet>"]
+}
+
+output "mypg" {
+  value = "${scalechamp_postgresql.main_db.master_host} ${scalechamp_postgresql.main_db.password}"
 }
 
 output "myredis" {
