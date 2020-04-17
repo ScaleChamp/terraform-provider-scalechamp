@@ -8,8 +8,19 @@ resource "scalechamp_redis" "redis_cache" {
   plan = "hobby-100"
   cloud = "do"
   region = "fra1"
-  whitelist = ["85.238.98.91"]
 }
+
+resource "scalechamp_postgresql" "main_db" {
+  name = "cache"
+  plan = "hobby-100"
+  cloud = "do"
+  region = "fra1"
+}
+
+output "main_db1" {
+  value = "${scalechamp_postgresql.main_db.master_host} ${scalechamp_postgresql.main_db.password}"
+}
+
 
 output "myredis" {
   value = "${scalechamp_redis.redis_cache.master_host} ${scalechamp_redis.redis_cache.password}"
