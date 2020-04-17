@@ -1,2 +1,2 @@
-# terraform-provider-scalablespace
-[ScalableSpace](https://www.scalablespace.net) is a multi cloud database hosting provider
+# terraform-provider-scalechamp
+[ScaleChamp](https://www.scalechamp.com) is a victorious managed databases provider
