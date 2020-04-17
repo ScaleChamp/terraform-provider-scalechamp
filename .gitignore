@@ -1,6 +1,6 @@
 .terraform/
 terraform.*
-terraform-provider-cloudamqp
+terraform-provider-scalechamp
 .idea/
 *.iml
 vendor/
