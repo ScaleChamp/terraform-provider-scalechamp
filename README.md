@@ -5,7 +5,7 @@ Example usage
 
 ```
 provider "scalechamp" {
-    token = "9d1c7a6689bf9aeb7d5086067c1ce236"
+    token = "<token>"
 }
 
 resource "scalechamp_redis" "redis_cache" {
@@ -13,7 +13,7 @@ resource "scalechamp_redis" "redis_cache" {
   plan = "hobby-100"
   cloud = "do"
   region = "fra1"
-  whitelist = ["85.238.98.91"]
+  whitelist = ["<ip|subnet>"]
 }
 
 output "myredis" {
